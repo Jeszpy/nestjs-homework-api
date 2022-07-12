@@ -1,14 +1,27 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { configuration } from './config/configuration';
+import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
+  const config = app.get(ConfigService);
+  app.setGlobalPrefix('/api');
   app.enableCors();
-  await app.listen(configuration.port);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      stopAtFirstError: true,
+    }),
+  );
+  await app.listen(config.get('PORT'));
+  console.log(`Successful connect to DB: ${config.get('MONGO_URI')}`);
+  console.log(`App started at port: ${config.get('PORT')}`);
 }
 
-bootstrap().then(() => {
-  console.log(`App started at port: ${configuration.port}`);
-});
+bootstrap();
+
+// bootstrap().then(() => {
+//   console.log(`Successful connect to DB: ${configuration.mongoUri}`);
+//   console.log(`App started at port: ${configuration.port}`);
+// });
