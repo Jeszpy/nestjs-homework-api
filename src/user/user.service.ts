@@ -1,9 +1,8 @@
-import { createParamDecorator, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
-import { CreateUserDto } from './dto/create-user.dto';
-import { randomUUID } from 'crypto';
 import { validateInputModelInBll } from '../../helpers/validation/validateInputModelInBll';
-// import { User } from '../schemas/user.schema';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -14,27 +13,46 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const userInDb = await this.userRepository.findUserByLoginOrEmail(
-      createUserDto,
-    );
-    if (userInDb) {
-      throw new Error('User with this login/email already exists');
-    }
-    //TODO: где делать ID? сервис\репо т.к. при подключении другой репы(Postgres) ID автогенерируется\инкрементируется.
-    // Может сделать возврат id: _id?
     await validateInputModelInBll(createUserDto, CreateUserDto);
-    const userId = randomUUID();
-    const newUser = await this.userRepository.create(userId, createUserDto);
-    // const returnedUser = {
-    //   id: userId,
-    //   login: newUser.login,
-    // };
-    // return returnedUser;
-
+    await this.checkUserInDbByLoginOrEmail(
+      createUserDto.login,
+      createUserDto.email,
+    );
+    const newUser = await this.userRepository.create(createUserDto);
     return {
-      id: userId,
+      id: newUser.id,
       login: newUser.login,
     };
+  }
+
+  async updateOneUser(updateUserDto: UpdateUserDto) {
+    await this.checkUserInDbById(updateUserDto.id);
+    await this.checkUserInDbByLoginOrEmail(
+      updateUserDto.login,
+      updateUserDto.email,
+    );
+    return this.userRepository.updateOneUser(updateUserDto);
+  }
+
+  async checkUserInDbByLoginOrEmail(
+    login: string,
+    email: string,
+  ): Promise<void> {
+    const loginInDb = await this.userRepository.findUserByLoginOrEmail(login);
+    if (loginInDb) {
+      throw new Error('User with this login already exists');
+    }
+    const emailInDb = await this.userRepository.findUserByLoginOrEmail(email);
+    if (emailInDb) {
+      throw new Error('User with this email already exists');
+    }
+  }
+
+  async checkUserInDbById(userId: string): Promise<void> {
+    const userIdInDb = await this.userRepository.findUserById(userId);
+    if (userIdInDb) {
+      throw new Error('User does not exist');
+    }
   }
 }
 

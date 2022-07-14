@@ -1,1 +1,3 @@
-export * from './validation.pipe';
+import { validationPipe } from './validation.pipe';
+
+export const pipes = [validationPipe];
