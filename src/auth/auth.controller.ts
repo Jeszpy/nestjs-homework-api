@@ -94,7 +94,7 @@ export class AuthController {
     return user ? res.sendStatus(204) : res.sendStatus(400);
   }
 
-  async confirmEmail(req: Request, res: Response) {
+  async confirmEmail(@Req() req, @Res() res) {
     const { code } = req.body;
     const codeInDB = await this.authService.findCodeInDB(code);
     if (!codeInDB) {
@@ -107,7 +107,7 @@ export class AuthController {
     return confirm ? res.sendStatus(204) : res.sendStatus(400);
   }
 
-  async login(req: Request, res: Response) {
+  async login(@Req() req, @Res() res) {
     const { login, password } = req.body;
     const tokens = await this.jwtService.createJWT(login, password);
     if (!tokens) {
@@ -120,7 +120,7 @@ export class AuthController {
     return res.send({ accessToken: tokens.accessToken });
   }
 
-  async refreshToken(req: Request, res: Response) {
+  async refreshToken(@Req() req, @Res() res) {
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
@@ -140,7 +140,7 @@ export class AuthController {
     }
   }
 
-  async logout(req: Request, res: Response) {
+  async logout(@Req() req, @Res() res) {
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
@@ -153,7 +153,7 @@ export class AuthController {
     }
   }
 
-  async me(req: Request, res: Response) {
+  async me(@Req() req, @Res() res) {
     try {
       const userId = req.user!.id;
       const userInfo = await this.usersService.getUserInfoById(userId);
