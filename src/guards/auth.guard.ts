@@ -10,6 +10,13 @@ export class AuthGuard implements CanActivate {
 
     // return validateRequest(request);
 
+    const auth = request.headers.authorization;
+    if (!auth) return false;
+    const jwtCode = getCodeFromBearerAuth(auth);
     return true;
   }
 }
+
+const getCodeFromBearerAuth = (fullBearer) => {
+  return fullBearer.split(' ')[1];
+};

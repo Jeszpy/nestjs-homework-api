@@ -1,13 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { pipes } from '../pipes';
-import {
-  ErrorExceptionFilter,
-  exceptionFilters,
-  HttpExceptionFilter,
-} from '../filters/exception.filter';
-// import { filters } from '../filters';
+import { pipes } from './pipes';
+import { filters } from './filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,7 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/api');
   app.enableCors();
   app.useGlobalPipes(...pipes);
-  app.useGlobalFilters(new HttpExceptionFilter(), new ErrorExceptionFilter());
+  app.useGlobalFilters(...filters);
   await app.listen(port);
   // console.log(`Successful connect to DB: ${mongoUri}`);
   console.log(`App started at port: ${port}`);

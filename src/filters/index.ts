@@ -1,3 +1,3 @@
 import { exceptionFilters } from './exception.filter';
 
-// export const filters = [exceptionFilters];
+export const filters = [...exceptionFilters];

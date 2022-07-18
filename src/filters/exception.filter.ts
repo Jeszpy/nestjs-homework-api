@@ -31,6 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
   }
 }
+
 @Catch(Error)
 export class ErrorExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
@@ -38,16 +39,19 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     // const request = ctx.getRequest<Request>();
 
-    console.log('here');
     if (process.env.enviroment !== 'production') {
-      response
-        .status(500)
-        .send({ error: exception.toString(), stack: exception.stack });
+      const error = exception.toString();
+      if (error === 'ForbiddenException: Forbidden resource') {
+        return response.status(403).send();
+      }
+      const stack = exception.stack;
+      response.status(500).send({ error, stack });
     } else {
       response.status(500).send('Some server error');
     }
   }
 }
+
 export const exceptionFilters = [
   new HttpExceptionFilter(),
   new ErrorExceptionFilter(),
