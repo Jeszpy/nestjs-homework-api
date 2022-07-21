@@ -3,6 +3,8 @@ import { AccessAndRefreshTokenType, RefreshTokenType } from '../types/jwt';
 import { randomUUID } from 'crypto';
 import { settings } from '../settings';
 import * as argon2 from 'argon2';
+import { IUsersRepository } from '../user/user.service';
+import jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JWTService {

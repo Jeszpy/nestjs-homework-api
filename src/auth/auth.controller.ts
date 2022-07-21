@@ -1,6 +1,7 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
 import { UserAccountDBType } from '../types/user';
 import { JWTService } from '../jwt/jwt.service';
+import { IUsersService } from '../user/user.controller';
 
 @Controller('auth')
 export class AuthController {

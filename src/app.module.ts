@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 // import { JwtService } from './jwt/jwt.service';
 import { UserModule } from './user/user.module';
+import { EmailModule } from './email/email.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -13,7 +14,8 @@ import configuration from './config/configuration';
     ConfigModule.forRoot({ load: [configuration] }),
     DatabaseModule,
     UserModule,
-    // AuthModule,
+    EmailModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
