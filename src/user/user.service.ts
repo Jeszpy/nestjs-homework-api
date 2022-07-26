@@ -9,13 +9,18 @@ import {
 import { EmailType } from '../types/emails';
 import { Filter } from 'mongodb';
 import { randomUUID } from 'crypto';
-import addMinutes from 'date-fns/addMinutes';
-import { pagination, PaginationResultType } from '../helpers/pagination';
+import { addMinutes } from 'date-fns';
+import {
+  pagination,
+  PaginationResultType,
+} from '../helpers/pagination/pagination';
 import * as argon2 from 'argon2';
 import { EmailRepository } from '../email/email.repository';
+import { IUsersService } from './user.controller';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
-export class UserService {
+export class UserService implements IUsersService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly emailRepository: EmailRepository,

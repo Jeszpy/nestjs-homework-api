@@ -1,31 +1,51 @@
-import { Controller, Delete, Get, Post, Req, Res } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserIdAndLoginType, UserInfoType } from '../types/user';
-import { PaginationResultType } from '../helpers/pagination';
+import { PaginationResultType } from '../helpers/pagination/pagination';
+import { CreateUserDto } from './dto/createUser.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  async getAllUsers(@Req() req, @Res() res) {
-    console.log('here');
-    const { pageNumber, pageSize } = req.query;
-    const users = await this.userService.getAllUsers(pageNumber, pageSize);
-    return res.send(users);
+  async getAllUsers(
+    @Query('pageSize', ParseIntPipe) pageSize = 10,
+    @Query('pageNumber', ParseIntPipe) pageNumber = 1,
+  ) {
+    return await this.userService.getAllUsers(pageNumber, pageSize);
   }
 
+  @HttpCode(201)
   @Post()
-  async createUser(@Req() req, @Res() res) {
-    const { login, email, password } = req.body;
-    const newUser = await this.userService.createUser(login, email, password);
-    return newUser ? res.status(201).send(newUser) : res.sendStatus(400);
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    const newUser = await this.userService.createUser(
+      createUserDto.login,
+      createUserDto.email,
+      createUserDto.password,
+    );
+    if (!newUser) throw new BadRequestException();
+    return newUser;
   }
+
+  @HttpCode(204)
   @Delete(':id')
-  async deleteUserById(@Req() req, @Res() res) {
-    const id = req.params.id;
+  async deleteUserById(@Param('id') id: string) {
     const isUserDeleted = await this.userService.deleteUserById(id);
-    return isUserDeleted ? res.sendStatus(204) : res.sendStatus(404);
+    if (!isUserDeleted) throw new NotFoundException();
+    return isUserDeleted;
   }
 }
 

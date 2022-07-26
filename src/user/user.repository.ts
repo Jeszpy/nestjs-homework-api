@@ -6,9 +6,10 @@ import {
   UserAccountType,
   UserIdAndLoginType,
 } from '../types/user';
+import { IUsersRepository } from './user.service';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository implements IUsersRepository {
   constructor(
     @InjectModel('User') private userModel: mongoose.Model<UserAccountDBType>,
   ) {}
@@ -37,7 +38,7 @@ export class UserRepository {
     pageSize: number,
   ): Promise<UserIdAndLoginType[]> {
     const allUsers = await this.userModel
-      .find({})
+      .find({}, {})
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
     return allUsers.map((u) => ({

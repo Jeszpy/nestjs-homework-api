@@ -3,14 +3,15 @@ import { AccessAndRefreshTokenType, RefreshTokenType } from '../types/jwt';
 import { randomUUID } from 'crypto';
 import { settings } from '../settings';
 import * as argon2 from 'argon2';
-import { IUsersRepository } from '../user/user.service';
 import jwt from 'jsonwebtoken';
+import { UserRepository } from '../user/user.repository';
+import { JwtRepository } from './jwt.repository';
 
 @Injectable()
 export class JWTService {
   constructor(
-    private usersRepository: IUsersRepository,
-    private jwtRepository: IJwtRepository,
+    private usersRepository: UserRepository,
+    private jwtRepository: JwtRepository,
   ) {}
 
   async verifyJwt(token: RefreshTokenType | null): Promise<string | null> {

@@ -1,14 +1,29 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpException,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { UserAccountDBType } from '../types/user';
 import { JWTService } from '../jwt/jwt.service';
 import { IUsersService } from '../user/user.controller';
+import { UserService } from '../user/user.service';
+import { AuthService } from './auth.service';
+import { CreateUserDto } from '../user/dto/createUser.dto';
+import { JwtAuthGuard } from '../guards/jwt.auth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly jwtService: JWTService,
-    private readonly usersService: IUsersService,
-    private readonly authService: IAuthService,
+    private readonly usersService: UserService,
+    private readonly authService: AuthService,
   ) {}
 
   private registrationEmailResendingErrorMessage = () => {
@@ -81,20 +96,36 @@ export class AuthController {
       : res.status(400).send(this.registrationCodeConfirmErrorMessage());
   }
 
-  async registration(@Req() req, @Res() res) {
-    const { login, email, password } = req.body;
-    const emailInDB = await this.authService.findOneUserByEmail(email);
-    if (emailInDB) {
+  @HttpCode(204)
+  @Post('registration')
+  async registration(
+    @Req() req,
+    @Res() res,
+    @Body() createUserDto: CreateUserDto,
+  ) {
+    const emailInDB = await this.authService.findOneUserByEmail(
+      createUserDto.email,
+    );
+    // if (emailInDB) throw new BadRequestException();
+    if (emailInDB)
       return res.status(400).send(this.returnErrorMessage('email'));
-    }
-    const loginInDB = await this.authService.findOneUserByLogin(login);
-    if (loginInDB) {
+    const loginInDB = await this.authService.findOneUserByLogin(
+      createUserDto.login,
+    );
+    // if (loginInDB) throw new BadRequestException();
+    if (loginInDB)
       return res.status(400).send(this.returnErrorMessage('login'));
-    }
-    const user = await this.usersService.createUser(login, email, password);
-    return user ? res.sendStatus(204) : res.sendStatus(400);
+    const user = await this.usersService.createUser(
+      createUserDto.login,
+      createUserDto.email,
+      createUserDto.password,
+    );
+    // if (!user) throw new BadRequestException();
+    if (!user) return res.sendStatus(400);
+    return res.sendStatus(204);
   }
 
+  @Post('registration-confirmation')
   async confirmEmail(@Req() req, @Res() res) {
     const { code } = req.body;
     const codeInDB = await this.authService.findCodeInDB(code);
@@ -108,6 +139,7 @@ export class AuthController {
     return confirm ? res.sendStatus(204) : res.sendStatus(400);
   }
 
+  @Post('login')
   async login(@Req() req, @Res() res) {
     const { login, password } = req.body;
     const tokens = await this.jwtService.createJWT(login, password);
@@ -121,6 +153,7 @@ export class AuthController {
     return res.send({ accessToken: tokens.accessToken });
   }
 
+  @Post('refresh-token')
   async refreshToken(@Req() req, @Res() res) {
     try {
       const refreshToken = req.cookies.refreshToken;
@@ -141,6 +174,7 @@ export class AuthController {
     }
   }
 
+  @Post('logout')
   async logout(@Req() req, @Res() res) {
     try {
       const refreshToken = req.cookies.refreshToken;
@@ -154,6 +188,8 @@ export class AuthController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
   async me(@Req() req, @Res() res) {
     try {
       const userId = req.user!.id;

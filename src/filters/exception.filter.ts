@@ -45,7 +45,13 @@ export class ErrorExceptionFilter implements ExceptionFilter {
         return response.status(403).send();
       }
       const stack = exception.stack;
-      response.status(500).send({ error, stack });
+      let status;
+      try {
+        status = exception.getStatus();
+      } catch (e) {
+        status = 500;
+      }
+      response.status(status).send({ error, stack });
     } else {
       response.status(500).send('Some server error');
     }

@@ -1,7 +1,7 @@
-import { CommentsWithoutPostIdType } from '../types/comments';
-import { BloggerType } from '../types/bloggers';
-import { PostType } from '../types/posts';
-import { UserIdAndLoginType } from '../types/user';
+import { CommentsWithoutPostIdType } from '../../types/comments';
+import { BloggerType } from '../../types/bloggers';
+import { PostType } from '../../types/posts';
+import { UserIdAndLoginType } from '../../types/user';
 
 type items =
   | BloggerType[]
