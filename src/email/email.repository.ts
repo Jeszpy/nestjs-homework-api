@@ -6,7 +6,7 @@ import { EmailType } from '../types/emails';
 @Injectable()
 export class EmailRepository {
   constructor(
-    @InjectModel('Email') private emailModel: mongoose.Model<EmailType>,
+    @InjectModel('Emails') private emailModel: mongoose.Model<EmailType>,
   ) {}
   async insertEmailToQueue(emailInfo: EmailType): Promise<boolean> {
     await this.emailModel.create(emailInfo);

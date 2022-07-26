@@ -11,7 +11,7 @@ import { IUsersRepository } from './user.service';
 @Injectable()
 export class UserRepository implements IUsersRepository {
   constructor(
-    @InjectModel('User') private userModel: mongoose.Model<UserAccountDBType>,
+    @InjectModel('Users') private userModel: mongoose.Model<UserAccountDBType>,
   ) {}
 
   async getOneUserForJWT(login: string): Promise<UserAccountType | null> {
@@ -24,9 +24,7 @@ export class UserRepository implements IUsersRepository {
 
   async getOneUserById(id: string): Promise<UserIdAndLoginType | null> {
     const user = await this.userModel.findOne({ 'accountData.id': id });
-    if (!user) {
-      return null;
-    }
+    if (!user) return null;
     return {
       id: user.accountData.id,
       login: user.accountData.login,

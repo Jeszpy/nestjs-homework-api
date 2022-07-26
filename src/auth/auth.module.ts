@@ -10,15 +10,22 @@ import { UserRepository } from '../user/user.repository';
 import { EmailRepository } from '../email/email.repository';
 import { emailSchema } from '../schemas/emails-schema';
 import { UserService } from '../user/user.service';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 const schemas = [
-  { name: 'Jwt', schema: jwtSchema },
-  { name: 'User', schema: usersSchema },
-  { name: 'Email', schema: emailSchema },
+  { name: 'RefreshTokens', schema: jwtSchema },
+  { name: 'Users', schema: usersSchema },
+  { name: 'Emails', schema: emailSchema },
 ];
 
 @Module({
-  imports: [MongooseModule.forFeature(schemas)],
+  imports: [
+    MongooseModule.forFeature(schemas),
+    ThrottlerModule.forRoot({
+      ttl: 10 * 1000,
+      limit: 5,
+    }),
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,

@@ -9,7 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { constants } from '../constants';
 import { join } from 'path';
 
-const schemas = [{ name: 'Email', schema: emailSchema }];
+const schemas = [{ name: 'Emails', schema: emailSchema }];
 
 @Module({
   imports: [

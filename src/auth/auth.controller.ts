@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpException,
   Post,
   Req,
   Res,
@@ -12,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { UserAccountDBType } from '../types/user';
 import { JWTService } from '../jwt/jwt.service';
-import { IUsersService } from '../user/user.controller';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/createUser.dto';
@@ -81,7 +79,7 @@ export class AuthController {
     };
   };
 
-  @Get('registration-email-resending')
+  @Post('registration-email-resending')
   async registrationEmailResending(@Req() req, @Res() res) {
     const { email } = req.body;
     const emailInDB = await this.authService.findOneUserByEmail(email);

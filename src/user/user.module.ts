@@ -9,8 +9,8 @@ import { emailSchema } from '../schemas/emails-schema';
 import { EmailModule } from '../email/email.module';
 
 const schemas = [
-  { name: 'User', schema: usersSchema },
-  { name: 'Email', schema: emailSchema },
+  { name: 'Users', schema: usersSchema },
+  { name: 'Emails', schema: emailSchema },
 ];
 
 @Module({

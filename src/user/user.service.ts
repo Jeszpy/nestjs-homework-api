@@ -38,8 +38,8 @@ export class UserService implements IUsersService {
     return pagination(pageNumber, pageSize, totalCount, users);
   }
 
-  async getOneUserById(id: string): Promise<UserIdAndLoginType | null> {
-    return await this.userRepository.getOneUserById(id);
+  getOneUserById(id: string): Promise<UserIdAndLoginType | null> {
+    return this.userRepository.getOneUserById(id);
   }
 
   async createUser(

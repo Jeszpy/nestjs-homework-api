@@ -1,9 +1,9 @@
 export type RefreshTokenType = {
-    refreshToken: string,
-    blocked: boolean
-}
+  refreshToken: string;
+  blocked: boolean;
+};
 
-export type AccessAndRefreshTokenType ={
-    accessToken: string,
-    refreshToken: string,
-}
+export type AccessAndRefreshTokenType = {
+  accessToken: string;
+  refreshToken: string;
+};

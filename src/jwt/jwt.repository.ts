@@ -6,7 +6,8 @@ import mongoose from 'mongoose';
 @Injectable()
 export class JwtRepository {
   constructor(
-    @InjectModel('Jwt') private jwtModel: mongoose.Model<RefreshTokenType>,
+    @InjectModel('RefreshTokens')
+    private jwtModel: mongoose.Model<RefreshTokenType>,
   ) {}
 
   async saveRefreshToken(refreshToken: string): Promise<void> {
