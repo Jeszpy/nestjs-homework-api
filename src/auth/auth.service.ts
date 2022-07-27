@@ -40,7 +40,7 @@ export class AuthService implements IAuthService {
   }
 
   async findOneUserByLogin(login: string): Promise<boolean> {
-    return await this.usersRepository.findOneUserByLogin(login);
+    return this.usersRepository.findOneUserByLogin(login);
   }
 
   async registrationEmailResending(email: string): Promise<boolean> {

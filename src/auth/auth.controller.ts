@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -13,8 +12,11 @@ import { UserAccountDBType } from '../types/user';
 import { JWTService } from '../jwt/jwt.service';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../user/dto/createUser.dto';
-import { JwtAuthGuard } from '../guards/jwt.auth.guard';
+import { JwtAuthGuard } from '../guards/auth/jwt.auth.guard';
+import { LoginDto } from './dto/login.dto';
+import { RegistrationDto } from './dto/registration.dto';
+import { LocalAuthGuard } from '../guards/auth/local.auth.guard';
+import { CurrentUserId } from '../decorators/param/currentUserId.param.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -99,24 +101,24 @@ export class AuthController {
   async registration(
     @Req() req,
     @Res() res,
-    @Body() createUserDto: CreateUserDto,
+    @Body() registrationDto: RegistrationDto,
   ) {
     const emailInDB = await this.authService.findOneUserByEmail(
-      createUserDto.email,
+      registrationDto.email,
     );
     // if (emailInDB) throw new BadRequestException();
     if (emailInDB)
       return res.status(400).send(this.returnErrorMessage('email'));
     const loginInDB = await this.authService.findOneUserByLogin(
-      createUserDto.login,
+      registrationDto.login,
     );
     // if (loginInDB) throw new BadRequestException();
     if (loginInDB)
       return res.status(400).send(this.returnErrorMessage('login'));
     const user = await this.usersService.createUser(
-      createUserDto.login,
-      createUserDto.email,
-      createUserDto.password,
+      registrationDto.login,
+      registrationDto.email,
+      registrationDto.password,
     );
     // if (!user) throw new BadRequestException();
     if (!user) return res.sendStatus(400);
@@ -137,13 +139,14 @@ export class AuthController {
     return confirm ? res.sendStatus(204) : res.sendStatus(400);
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req, @Res() res) {
-    const { login, password } = req.body;
-    const tokens = await this.jwtService.createJWT(login, password);
-    if (!tokens) {
-      return res.sendStatus(401);
-    }
+  async login(@Req() req, @Res() res, @Body() loginDto: LoginDto) {
+    const tokens = await this.jwtService.createJWT(
+      loginDto.login,
+      loginDto.password,
+    );
+    if (!tokens) return res.sendStatus(401);
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,
@@ -188,11 +191,9 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async me(@Req() req, @Res() res) {
+  async me(@CurrentUserId() currentUserId) {
     try {
-      const userId = req.user!.id;
-      const userInfo = await this.usersService.getUserInfoById(userId);
-      return res.send(userInfo);
+      return await this.usersService.getUserInfoById(currentUserId);
     } catch (e) {
       console.error(e);
     }

@@ -42,6 +42,10 @@ export class UserService implements IUsersService {
     return this.userRepository.getOneUserById(id);
   }
 
+  getUserIdByLoginOrEmail(loginOrEmail: string): Promise<string | null> {
+    return this.userRepository.getUserIdByLoginOrEmail(loginOrEmail);
+  }
+
   async createUser(
     login: string,
     email: string,

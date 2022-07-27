@@ -11,6 +11,12 @@ import { EmailRepository } from '../email/email.repository';
 import { emailSchema } from '../schemas/emails-schema';
 import { UserService } from '../user/user.service';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { LocalStrategy } from './strategy/local.strategy';
+import { JwtStrategy } from './strategy/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { constants } from '../constants';
 
 const schemas = [
   { name: 'RefreshTokens', schema: jwtSchema },
@@ -25,6 +31,20 @@ const schemas = [
       ttl: 10 * 1000,
       limit: 5,
     }),
+    PassportModule,
+    JwtModule.registerAsync({
+      useFactory: (config: ConfigService) => {
+        return {
+          secret: config.get<string>(constants.JWT_SECRET),
+          signOptions: {
+            expiresIn: config.get<string | number>(
+              constants.ACCESS_TOKEN_EXPIRES_IN,
+            ),
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AuthController],
   providers: [
@@ -34,6 +54,8 @@ const schemas = [
     UserService,
     UserRepository,
     EmailRepository,
+    LocalStrategy,
+    JwtStrategy,
   ],
 })
 export class AuthModule {}

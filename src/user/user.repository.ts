@@ -120,4 +120,18 @@ export class UserRepository implements IUsersRepository {
   async getUserInfoById(userId: string): Promise<UserAccountDBType | null> {
     return this.userModel.findOne({ 'accountData.id': userId });
   }
+
+  async getUserIdByLoginOrEmail(loginOrEmail: string): Promise<string | null> {
+    const accountDataId = await this.userModel.findOne(
+      {
+        $or: [
+          { 'accountData.login': loginOrEmail },
+          { 'accountData.email': loginOrEmail },
+        ],
+      },
+      { 'accountData.id': true, _id: false },
+    );
+    if (accountDataId === null) return null;
+    return accountDataId.accountData.id;
+  }
 }

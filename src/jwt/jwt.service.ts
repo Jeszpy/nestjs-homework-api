@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AccessAndRefreshTokenType, RefreshTokenType } from '../types/jwt';
 import { randomUUID } from 'crypto';
 import * as argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { UserRepository } from '../user/user.repository';
 import { JwtRepository } from './jwt.repository';
 import { ConfigService } from '@nestjs/config';
@@ -44,18 +44,12 @@ export class JWTService {
     try {
       const verify = await argon2.verify(user.password, password);
       if (!verify) return null;
-      console.log('uid', user.id);
-      console.log('secret', this.jwtSecret);
-      console.log('exp in', this.accessTokenExpiresIn);
       const accessToken = jwt.sign({ userId: user.id }, this.jwtSecret, {
         expiresIn: this.accessTokenExpiresIn,
       });
-      console.log(this.jwtSecret, this.accessTokenExpiresIn);
-      console.log(accessToken);
       const refreshToken = jwt.sign({ userId: user.id }, this.jwtSecret, {
         expiresIn: this.refreshTokenExpiresIn,
       });
-      console.log(accessToken, refreshToken);
       await this.jwtRepository.saveRefreshToken(refreshToken);
       return { accessToken, refreshToken };
     } catch (e) {
