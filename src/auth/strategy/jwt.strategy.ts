@@ -23,14 +23,17 @@ import { constants } from '../../constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  private readonly secret: string;
-  constructor(private configService: ConfigService) {
+  // private secret: string;
+  // private configService: ConfigService;
+  constructor(configService: ConfigService) {
+    const secret = configService.get<string>(constants.JWT_SECRET);
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: secret,
     });
-    this.secret = this.configService.get<string>(constants.JWT_SECRET);
+    // this.secret = secret;
+    // this.configService = configService;
   }
 
   async validate(payload: any) {

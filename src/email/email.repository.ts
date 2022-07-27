@@ -22,7 +22,8 @@ export class EmailRepository {
       return null;
     }
     const id = email[0].id;
-    await this.emailModel.updateOne({ id }, { $set: { status: 'sending' } });
+    //TODO: think about status
+    // await this.emailModel.updateOne({ id }, { $set: { status: 'sending' } });
     return email[0];
   }
 
