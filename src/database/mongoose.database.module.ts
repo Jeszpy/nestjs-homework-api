@@ -16,4 +16,4 @@ import { constants } from '../constants';
   controllers: [],
   providers: [],
 })
-export class DatabaseModule {}
+export class MongooseDatabaseModule {}

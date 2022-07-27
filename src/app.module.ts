@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule } from './database/database.module';
+import { MongooseDatabaseModule } from './database/mongoose.database.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { EmailModule } from './email/email.module';
@@ -14,7 +14,7 @@ import { TestingModule } from './testing/testing.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
     ScheduleModule.forRoot(),
-    DatabaseModule,
+    MongooseDatabaseModule,
     UserModule,
     EmailModule,
     AuthModule,
