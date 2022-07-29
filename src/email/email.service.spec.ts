@@ -4,10 +4,15 @@ import { EmailService } from './email.service';
 describe('EmailService', () => {
   let service: EmailService;
 
+  const mockEmailService = {};
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [EmailService],
-    }).compile();
+    })
+      .overrideProvider(EmailService)
+      .useValue(mockEmailService)
+      .compile();
 
     service = module.get<EmailService>(EmailService);
   });
