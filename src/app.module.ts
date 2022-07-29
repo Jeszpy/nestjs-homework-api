@@ -9,6 +9,8 @@ import { EmailModule } from './email/email.module';
 import configuration from './config/configuration';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TestingModule } from './testing/testing.module';
+import { BloggerModule } from './blogger/blogger.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { TestingModule } from './testing/testing.module';
     EmailModule,
     AuthModule,
     TestingModule,
+    BloggerModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

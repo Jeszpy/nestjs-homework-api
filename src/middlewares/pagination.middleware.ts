@@ -4,6 +4,7 @@ const defaultPageNumber = 1;
 const defaultPageSize = 10;
 const defaultSearchNameTerm = {};
 
+// TODO: remake from middleware to decorator!
 export function paginationMiddleware(
   req: Request,
   res: Response,
@@ -37,6 +38,7 @@ export function paginationMiddleware(
   } else {
     searchNameTerm = { name: { $regex: searchNameTerm } };
   }
+  console.log(searchNameTerm);
   req.query.pageNumber = pageNumber;
   req.query.pageSize = pageSize;
   req.query.searchNameTerm = searchNameTerm;

@@ -22,8 +22,8 @@ export class UserController {
 
   @Get()
   async getAllUsers(
-    @Query('pageSize', ParseIntPipe) pageSize = 10,
-    @Query('pageNumber', ParseIntPipe) pageNumber = 1,
+    @Query('pageSize', ParseIntPipe) pageSize,
+    @Query('pageNumber', ParseIntPipe) pageNumber,
   ) {
     return await this.userService.getAllUsers(pageNumber, pageSize);
   }
