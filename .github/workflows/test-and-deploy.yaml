@@ -28,5 +28,5 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}} # данный апи кей нужно получить в своем аккаунте на хероку
-          heroku_app_name: "backend-lesson-10" #Must be unique in Heroku
-          heroku_email: "bazunc@gmail.com" # ваш email который зареган в heroku
+          heroku_app_name: "nestjs-homework-api" #Must be unique in Heroku
+          heroku_email: "hleb.lukashonak@gmail.com" # ваш email который зареган в heroku
