@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '../guards/auth/jwt.auth.guard';
 import { LoginDto } from './dto/login.dto';
 import { RegistrationDto } from './dto/registration.dto';
 import { LocalAuthGuard } from '../guards/auth/local.auth.guard';
-import { CurrentUserId } from '../decorators/param/currentUserId.param.decorator';
+import { CurrentUserId } from '../decorators/http/param/currentUserId.param.decorator';
 
 @Controller('auth')
 export class AuthController {
