@@ -15,16 +15,14 @@ import { UserService } from './user.service';
 import { UserIdAndLoginType, UserInfoType } from '../types/user';
 import { PaginationResultType } from '../helpers/pagination/pagination';
 import { CreateUserDto } from './dto/createUser.dto';
+import { Pagination } from '../decorators/http/param/pagination.param.decorator';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  async getAllUsers(
-    @Query('pageSize', ParseIntPipe) pageSize,
-    @Query('pageNumber', ParseIntPipe) pageNumber,
-  ) {
+  async getAllUsers(@Pagination() { pageNumber, pageSize }) {
     return await this.userService.getAllUsers(pageNumber, pageSize);
   }
 

@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import { pipes } from './pipes';
 import { filters } from './filters';
-import { middlewares } from './middlewares';
+// import { middlewares } from './middlewares';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +13,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/api');
   app.enableCors();
   app.use(cookieParser());
-  app.use(...middlewares);
+  // app.use(...middlewares);
   app.useGlobalPipes(...pipes);
   app.useGlobalFilters(...filters);
   await app.listen(port);

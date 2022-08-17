@@ -8,12 +8,14 @@ import {
   Put,
   Query,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { BloggerService } from './blogger.service';
 import { CreateBloggerDto } from './dto/create-blogger.dto';
 import { UpdateBloggerDto } from './dto/update-blogger.dto';
 import { PostsService } from '../posts/posts.service';
 import { CreatePostDto } from '../posts/dto/create-post.dto';
+import { Pagination } from '../decorators/http/param/pagination.param.decorator';
 
 @Controller('bloggers')
 export class BloggerController {
@@ -28,12 +30,7 @@ export class BloggerController {
   }
 
   @Get()
-  findAll(
-    @Query('pageSize', ParseIntPipe) pageSize,
-    @Query('pageNumber', ParseIntPipe) pageNumber,
-    @Query('searchNameTerm') searchNameTerm: string,
-  ) {
-    console.log(searchNameTerm);
+  findAll(@Pagination() { pageNumber, pageSize, searchNameTerm }) {
     return this.bloggersService.findAll(searchNameTerm, pageNumber, pageSize);
   }
 
