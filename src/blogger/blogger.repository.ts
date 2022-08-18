@@ -11,8 +11,8 @@ export class BloggerRepository {
   constructor(
     @InjectModel('Bloggers') private bloggersModel: mongoose.Model<BloggerType>,
   ) {}
-  create(createBloggerDto: CreateBloggerDto) {
-    return 'This action adds a new blogger';
+  async create(createBloggerDto: CreateBloggerDto) {
+    return this.bloggersModel.create(createBloggerDto);
   }
 
   async findAll(
@@ -30,19 +30,41 @@ export class BloggerRepository {
       .lean();
   }
 
-  findOne(bloggerId: string) {
-    return `This action returns a #${bloggerId} blogger`;
+  findOneById(bloggerId: string) {
+    return this.bloggersModel
+      .findOne({ id: bloggerId }, { _id: false, __v: false })
+      .lean();
   }
 
-  update(bloggerId: string, updateBloggerDto: UpdateBloggerDto) {
-    return `This action updates a #${bloggerId} blogger`;
+  async update(bloggerId: string, updateBloggerDto: UpdateBloggerDto) {
+    try {
+      await this.bloggersModel.updateOne(
+        { id: bloggerId },
+        {
+          $set: {
+            name: updateBloggerDto.name,
+            youtubeUrl: updateBloggerDto.youtubeUrl,
+          },
+        },
+      );
+      return true;
+    } catch (e) {
+      return null;
+    }
   }
 
-  remove(bloggerId: string) {
-    return `This action removes a #${bloggerId} blogger`;
+  async removeById(bloggerId: string) {
+    try {
+      await this.bloggersModel.deleteOne({ id: bloggerId });
+      return true;
+    } catch (e) {
+      return null;
+    }
   }
 
   async getTotalCount(filter: FilterQuery<BloggerType>): Promise<number> {
-    return this.bloggersModel.countDocuments(filter);
+    return this.bloggersModel.countDocuments(
+      filter ? { name: { $regex: filter } } : filter,
+    );
   }
 }
