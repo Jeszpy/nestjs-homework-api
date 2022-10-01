@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { bloggersSchema } from '../schemas/bloggers-schema';
 import { postsSchema } from '../schemas/posts-schema';
 import { BloggerRepository } from './blogger.repository';
+import { PostsRepository } from '../posts/posts.repository';
 
 const schemas = [
   { name: 'Bloggers', schema: bloggersSchema },
@@ -15,6 +16,6 @@ const schemas = [
 @Module({
   imports: [MongooseModule.forFeature(schemas)],
   controllers: [BloggerController],
-  providers: [BloggerService, BloggerRepository, PostsService],
+  providers: [BloggerService, BloggerRepository, PostsService, PostsRepository],
 })
 export class BloggerModule {}

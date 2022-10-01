@@ -23,8 +23,6 @@ import { constants } from '../../constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  // private secret: string;
-  // private configService: ConfigService;
   constructor(configService: ConfigService) {
     const secret = configService.get<string>(constants.JWT_SECRET);
     super({
@@ -32,8 +30,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ignoreExpiration: false,
       secretOrKey: secret,
     });
-    // this.secret = secret;
-    // this.configService = configService;
   }
 
   async validate(payload: any) {

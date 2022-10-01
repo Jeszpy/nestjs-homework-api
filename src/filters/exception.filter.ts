@@ -14,13 +14,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
+    console.log('HttpExceptionFilter', status);
+
     if (status === 400) {
       const errorResponse = {
-        errors: [],
+        errorsMessages: [],
       };
 
       const responseBody: any = exception.getResponse();
-      responseBody.message.forEach((m) => errorResponse.errors.push(m));
+      responseBody.message.forEach((m) => errorResponse.errorsMessages.push(m));
+      console.log(errorResponse);
       response.status(status).json(errorResponse);
     } else {
       response.status(status).json({
@@ -38,6 +41,8 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     // const request = ctx.getRequest<Request>();
+
+    console.log('ErrorExceptionFilter');
 
     if (process.env.enviroment !== 'production') {
       const error = exception.toString();
@@ -60,5 +65,5 @@ export class ErrorExceptionFilter implements ExceptionFilter {
 
 export const exceptionFilters = [
   new HttpExceptionFilter(),
-  new ErrorExceptionFilter(),
+  // new ErrorExceptionFilter(),
 ];

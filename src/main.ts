@@ -4,6 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 import { pipes } from './pipes';
 import { filters } from './filters';
+import { ValidationPipe } from '@nestjs/common';
+import {
+  ErrorExceptionFilter,
+  HttpExceptionFilter,
+} from './filters/exception.filter';
 // import { middlewares } from './middlewares';
 
 async function bootstrap() {
@@ -16,6 +21,8 @@ async function bootstrap() {
   // app.use(...middlewares);
   app.useGlobalPipes(...pipes);
   app.useGlobalFilters(...filters);
+  // app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  // app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(port);
   console.log(`App started at port: ${port}`);
 }

@@ -39,5 +39,6 @@ export class TestingService {
     await this.emailsModel.deleteMany({});
     await this.refreshTokensModel.deleteMany({});
     await this.connectionsLimitsModel.deleteMany({});
+    return;
   }
 }

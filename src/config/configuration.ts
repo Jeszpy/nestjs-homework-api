@@ -1,4 +1,16 @@
 export default () => ({
   PORT: parseInt(process.env.PORT, 10) || 5100,
   MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27015',
+  JWT_SECRET: process.env.JWT_SECRET,
+  ACCESS_TOKEN_EXPIRES_IN: process.env.ACCESS_TOKEN_EXPIRES_IN,
+  REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN,
+  EMAIL_FROM: process.env.EMAIL_FROM,
+  EMAIL_FROM_PASSWORD: process.env.EMAIL_FROM_PASSWORD,
+  SQL_DATABASE_TYPE: process.env.SQL_DATABASE_TYPE,
+  POSTGRES_DB_HOST: process.env.POSTGRES_DB_HOST,
+  POSTGRES_DB_DATABASE: process.env.POSTGRES_DB_DATABASE,
+  POSTGRES_DB_USER: process.env.POSTGRES_DB_USER,
+  POSTGRES_DB_PORT: parseInt(process.env.POSTGRES_DB_PORT, 10) || 5432,
+  POSTGRES_DB_PASSWORD: process.env.POSTGRES_DB_PASSWORD,
+  POSTGRES_DB_URI: process.env.POSTGRES_DB_URI,
 });

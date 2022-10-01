@@ -9,6 +9,7 @@ import {
 } from '../helpers/pagination/pagination';
 import { BloggerDto } from './dto/blogger.dto';
 import { randomUUID } from 'crypto';
+import { PostsRepository } from '../posts/posts.repository';
 
 @Injectable()
 export class BloggerService {
@@ -66,12 +67,12 @@ export class BloggerService {
   ): Promise<PaginationResultType | null> {
     const blogger = await this.bloggersRepository.findOneById(bloggerId);
     if (!blogger) return null;
-    //TODO: сделать отдельный метод
-    const postsForSpecificBlogger = await this.postsRepository.getAllPosts(
-      { bloggerId },
-      pageNumber,
-      pageSize,
-    );
+    const postsForSpecificBlogger =
+      await this.postsRepository.getAllPostsByBloggerId(
+        bloggerId,
+        pageNumber,
+        pageSize,
+      );
     const totalCount = await this.postsRepository.getTotalCount({
       bloggerId,
     });

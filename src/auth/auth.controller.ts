@@ -98,11 +98,7 @@ export class AuthController {
 
   @HttpCode(204)
   @Post('registration')
-  async registration(
-    @Req() req,
-    @Res() res,
-    @Body() registrationDto: RegistrationDto,
-  ) {
+  async registration(@Res() res, @Body() registrationDto: RegistrationDto) {
     const emailInDB = await this.authService.findOneUserByEmail(
       registrationDto.email,
     );
@@ -126,8 +122,7 @@ export class AuthController {
   }
 
   @Post('registration-confirmation')
-  async confirmEmail(@Req() req, @Res() res) {
-    const { code } = req.body;
+  async confirmEmail(@Body() code: string, @Res() res) {
     const codeInDB = await this.authService.findCodeInDB(code);
     if (!codeInDB) {
       return res.status(400).send(this.invalidConfirmationCodeError());
