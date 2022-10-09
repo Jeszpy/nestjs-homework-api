@@ -6,7 +6,7 @@ import { EmailService } from './email.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { constants } from '../constants';
+import { appConstants } from '../appConstants';
 import { join } from 'path';
 
 const schemas = [{ name: 'Emails', schema: emailSchema }];
@@ -23,8 +23,8 @@ const schemas = [{ name: 'Emails', schema: emailSchema }];
           ignoreTLS: true,
           secure: true,
           auth: {
-            user: configService.get<string>(constants.EMAIL_FROM),
-            pass: configService.get<string>(constants.EMAIL_FROM_PASSWORD),
+            user: configService.get<string>(appConstants.EMAIL_FROM),
+            pass: configService.get<string>(appConstants.EMAIL_FROM_PASSWORD),
           },
         },
         defaults: {

@@ -1,13 +1,9 @@
 import { simpleParser } from 'mailparser';
 import ImapClient from 'emailjs-imap-client';
-// import { AppSettings } from './AppSettings';
 
 export class MailBoxImap {
   private imap: ImapClient;
 
-  // constructor(private appSettings: AppSettings) {
-  // user: appSettings.imap.EMAIL,
-  // pass: appSettings.imap.EMAIL_PASSWORD,
   constructor() {
     this.imap = new ImapClient('imap.yandex.com', 993, {
       auth: {
@@ -15,6 +11,7 @@ export class MailBoxImap {
         pass: process.env.READ_EMAIL_PASSWORD,
       },
       useSecureTransport: true,
+      logLevel: 'LOG_LEVEL_NONE',
     });
   }
 

@@ -6,7 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { UserRepository } from '../user/user.repository';
 import { JwtRepository } from './jwt.repository';
 import { ConfigService } from '@nestjs/config';
-import { constants } from '../constants';
+import { appConstants } from '../appConstants';
 
 @Injectable()
 export class JWTService {
@@ -16,12 +16,12 @@ export class JWTService {
     private configService: ConfigService,
   ) {}
 
-  jwtSecret = this.configService.get(constants.JWT_SECRET);
+  jwtSecret = this.configService.get(appConstants.JWT_SECRET);
   accessTokenExpiresIn = this.configService.get(
-    constants.ACCESS_TOKEN_EXPIRES_IN,
+    appConstants.ACCESS_TOKEN_EXPIRES_IN,
   );
   refreshTokenExpiresIn = this.configService.get(
-    constants.REFRESH_TOKEN_EXPIRES_IN,
+    appConstants.REFRESH_TOKEN_EXPIRES_IN,
   );
 
   async verifyJwt(token: RefreshTokenType | null): Promise<string | null> {
@@ -62,7 +62,7 @@ export class JWTService {
     try {
       const result: any = await jwt.verify(
         token,
-        this.configService.get(constants.JWT_SECRET),
+        this.configService.get(appConstants.JWT_SECRET),
       );
       return result.userId;
     } catch (e) {
@@ -72,7 +72,10 @@ export class JWTService {
 
   async blockOldRefreshToken(oldRefreshToken: string): Promise<boolean | null> {
     try {
-      jwt.verify(oldRefreshToken, this.configService.get(constants.JWT_SECRET));
+      jwt.verify(
+        oldRefreshToken,
+        this.configService.get(appConstants.JWT_SECRET),
+      );
     } catch (e) {
       return null;
     }
@@ -85,7 +88,7 @@ export class JWTService {
   async getNewRefreshToken(
     refreshToken: string,
   ): Promise<AccessAndRefreshTokenType | null> {
-    const jwtSecret = this.configService.get(constants.JWT_SECRET);
+    const jwtSecret = this.configService.get(appConstants.JWT_SECRET);
     const token = await this.jwtRepository.getRefreshToken(refreshToken);
     const oldRefreshToken = await this.verifyJwt(token);
     if (!oldRefreshToken) return null;
@@ -97,10 +100,10 @@ export class JWTService {
       userId,
     };
     const accessToken = jwt.sign(payload, jwtSecret, {
-      expiresIn: this.configService.get(constants.ACCESS_TOKEN_EXPIRES_IN),
+      expiresIn: this.configService.get(appConstants.ACCESS_TOKEN_EXPIRES_IN),
     });
     const newRefreshToken = jwt.sign(payload, jwtSecret, {
-      expiresIn: this.configService.get(constants.REFRESH_TOKEN_EXPIRES_IN),
+      expiresIn: this.configService.get(appConstants.REFRESH_TOKEN_EXPIRES_IN),
     });
     await this.jwtRepository.saveRefreshToken(newRefreshToken);
     return { accessToken, refreshToken: newRefreshToken };

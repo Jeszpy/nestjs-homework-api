@@ -1,1 +1,1 @@
-export const middlewares = [];
+export const globalMiddlewares = [];

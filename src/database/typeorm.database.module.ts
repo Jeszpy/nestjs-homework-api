@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { constants } from '../constants';
+import { appConstants } from '../appConstants';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

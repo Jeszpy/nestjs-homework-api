@@ -4,18 +4,13 @@ import { MailBoxImap } from '../imap.service';
 import * as cheerio from 'cheerio';
 import { isUUID } from '@nestjs/common/utils/is-uuid';
 import { createAppFor2E2Tests, routes, wipeAllData } from '../e2e.helpers';
-import mongoose from 'mongoose';
-import { usersSchema } from '../../src/schemas/users-schema';
-import { UserRepository } from '../../src/user/user.repository';
+import { minutesToMilliseconds } from 'date-fns';
 
 describe('AuthController (e2e)', () => {
-  jest.setTimeout(150 * 1000);
+  jest.setTimeout(minutesToMilliseconds(3));
 
-  // Jest STATE: {mailBox, validConfirmationCode}
+  // Jest STATE: {mailBox, validConfirmationCode, newValidConfirmationCode}
   let app: INestApplication;
-
-  const UsersModel = mongoose.model('Users', usersSchema);
-  const usersRepository = new UserRepository(UsersModel);
 
   const preparedData = {
     valid: {
@@ -58,10 +53,10 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('/registration (POST)', () => {
+  describe('(POST) /registration', () => {
     const registrationUrl = routes.authController.registration;
 
-    it('send wrong LOGIN should return 400 status code and error message, ', async () => {
+    it('send wrong login should return 400 status code and error message, ', async () => {
       const response = await request(app.getHttpServer())
         .post(registrationUrl)
         .send({
@@ -80,7 +75,7 @@ describe('AuthController (e2e)', () => {
       });
     });
 
-    it('send wrong EMAIL should return 400 status code and error message, ', async () => {
+    it('send wrong email should return 400 status code and error message, ', async () => {
       const response = await request(app.getHttpServer())
         .post(registrationUrl)
         .send({
@@ -99,7 +94,7 @@ describe('AuthController (e2e)', () => {
       });
     });
 
-    it('send wrong PASSWORD should return 400 status code and error message, ', async () => {
+    it('send wrong password should return 400 status code and error message, ', async () => {
       const response = await request(app.getHttpServer())
         .post(registrationUrl)
         .send({
@@ -130,7 +125,7 @@ describe('AuthController (e2e)', () => {
       expect(response.body).toEqual({});
     });
 
-    it('should read new email and get validConfirmationCode', async () => {
+    it('should read email and get validConfirmationCode', async () => {
       const mailBox: MailBoxImap = expect.getState().mailBox;
       const email = await mailBox.waitNewMessage(2);
       const html = await mailBox.getMessageHtml(email);
@@ -184,59 +179,58 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  // TODO: move to another file
-  // describe('/registration-email-resending POST', () => {
-  //   const registrationEmailResendingUrl =
-  //     routes.authController.registrationEmailResending;
-  //
-  //   it('should return error because email is invalid', async () => {
-  //     const response = await request(app.getHttpServer())
-  //       .post(registrationEmailResendingUrl)
-  //       .send({
-  //         email: invalidEmail,
-  //       });
-  //     expect(response.status).toBe(400);
-  //   });
-  //
-  //   it('should return error because email is not in DB', async () => {
-  //     const response = await request(app.getHttpServer())
-  //       .post(registrationEmailResendingUrl)
-  //       .send({
-  //         email: `${invalidEmail}@gmail.com`,
-  //       });
-  //     expect(response.status).toBe(400);
-  //     expect(response.body).toEqual({
-  //       errorsMessages: [
-  //         { message: 'user with this email was not found', field: 'email' },
-  //       ],
-  //     });
-  //   });
-  //
-  //   // DONT WORK IF EMAIL NOT IN DB
-  //   it('should send new email with new confirmationCode', async () => {
-  //     const response = await request(app.getHttpServer())
-  //       .post(registrationEmailResendingUrl)
-  //       .send({
-  //         email: validEmail,
-  //       });
-  //     expect(response.status).toBe(204);
-  //     const mailBox: MailBoxImap = expect.getState().mailBox;
-  //     const email = await mailBox.waitNewMessage(2);
-  //     const html = await mailBox.getMessageHtml(email);
-  //     expect(html).not.toBeNull();
-  //     const link = cheerio.load(html).root().find('a').attr('href');
-  //     const newValidConfirmationCode = link.split('?')[1].split('=')[1];
-  //     expect(newValidConfirmationCode).not.toBeNull();
-  //     expect(newValidConfirmationCode).not.toBeUndefined();
-  //     const isUuid = isUUID(newValidConfirmationCode);
-  //     expect(isUuid).toBeTruthy();
-  //     const validConfirmationCode = expect.getState().validConfirmationCode;
-  //     expect(newValidConfirmationCode).not.toEqual(validConfirmationCode);
-  //     expect.setState({ validConfirmationCode: newValidConfirmationCode });
-  //   });
-  // });
+  describe('(POST) /registration-email-resending', () => {
+    const registrationEmailResendingUrl =
+      routes.authController.registrationEmailResending;
 
-  // describe('', () => {
-  //   it('should return error because confirmationCode is invalid', async () => {});
-  // });
+    it('should return error because email is invalid', async () => {
+      const response = await request(app.getHttpServer())
+        .post(registrationEmailResendingUrl)
+        .send({
+          email: preparedData.invalid.email,
+        });
+      expect(response.status).toBe(400);
+    });
+
+    it('should return error because email is not in DB', async () => {
+      const response = await request(app.getHttpServer())
+        .post(registrationEmailResendingUrl)
+        .send({
+          email: `${preparedData.invalid.email}@gmail.com`,
+        });
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        errorsMessages: [
+          { message: 'user with this email was not found', field: 'email' },
+        ],
+      });
+    });
+
+    it('should send new email with new confirmationCode', async () => {
+      const response = await request(app.getHttpServer())
+        .post(registrationEmailResendingUrl)
+        .send({
+          email: preparedData.valid.email,
+        });
+      expect(response.status).toBe(204);
+      const mailBox: MailBoxImap = expect.getState().mailBox;
+      const email = await mailBox.waitNewMessage(2);
+      const html = await mailBox.getMessageHtml(email);
+      expect(html).not.toBeNull();
+      const link = cheerio.load(html).root().find('a').attr('href');
+      const newValidConfirmationCode = link.split('?')[1].split('=')[1];
+      expect(newValidConfirmationCode).not.toBeNull();
+      expect(newValidConfirmationCode).not.toBeUndefined();
+      const isUuid = isUUID(newValidConfirmationCode);
+      expect(isUuid).toBeTruthy();
+      const validConfirmationCode = expect.getState().validConfirmationCode;
+      expect(newValidConfirmationCode).not.toEqual(validConfirmationCode);
+      expect.setState({ newValidConfirmationCode });
+    });
+  });
+
+  // TODO: login & reg-confirm
+  describe('login & reg confirm', () => {
+    it('should return error because confirmationCode is invalid', async () => {});
+  });
 });

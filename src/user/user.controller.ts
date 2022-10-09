@@ -7,9 +7,7 @@ import {
   HttpCode,
   NotFoundException,
   Param,
-  ParseIntPipe,
   Post,
-  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserIdAndLoginType, UserInfoType } from '../types/user';

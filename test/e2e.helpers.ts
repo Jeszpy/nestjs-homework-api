@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
-import { pipes } from '../src/pipes';
-import { filters } from '../src/filters';
+import { globalPipes } from '../src/pipes';
+import { globalFilters } from '../src/filters';
 import { INestApplication } from '@nestjs/common';
 import supertest from 'supertest';
+import { addAppSettings } from '../src/main';
 
 const globalPrefix = '/api';
 const authController = `${globalPrefix}/auth`;
@@ -25,9 +26,7 @@ export const createAppFor2E2Tests = async (app: INestApplication) => {
   }).compile();
 
   app = moduleFixture.createNestApplication();
-  app.setGlobalPrefix(globalPrefix);
-  app.useGlobalPipes(...pipes);
-  app.useGlobalFilters(...filters);
+  app = addAppSettings(app);
   return app;
 };
 

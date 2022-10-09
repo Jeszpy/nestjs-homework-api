@@ -2,27 +2,26 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
-import { pipes } from './pipes';
-import { filters } from './filters';
-import { ValidationPipe } from '@nestjs/common';
-import {
-  ErrorExceptionFilter,
-  HttpExceptionFilter,
-} from './filters/exception.filter';
-// import { middlewares } from './middlewares';
+// import { globalMiddlewares } from './middlewares';
+import { globalPipes } from './pipes';
+import { globalFilters } from './filters';
+import { INestApplication } from '@nestjs/common';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const config = app.get(ConfigService);
-  const port = config.get('PORT');
+export const addAppSettings = (app: INestApplication) => {
   app.setGlobalPrefix('/api');
   app.enableCors();
   app.use(cookieParser());
-  // app.use(...middlewares);
-  app.useGlobalPipes(...pipes);
-  app.useGlobalFilters(...filters);
-  // app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  // app.useGlobalFilters(new HttpExceptionFilter());
+  // app.use(...globalMiddlewares);
+  app.useGlobalPipes(...globalPipes);
+  app.useGlobalFilters(...globalFilters);
+  return app;
+};
+
+async function bootstrap() {
+  let app = await NestFactory.create(AppModule);
+  const config = app.get(ConfigService);
+  const port = config.get('PORT');
+  app = addAppSettings(app);
   await app.listen(port);
   console.log(`App started at port: ${port}`);
 }

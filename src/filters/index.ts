@@ -1,3 +1,7 @@
-import { exceptionFilters } from './exception.filter';
+import { HttpExceptionFilter } from './HttpExceptionFilter';
+import { ErrorExceptionFilter } from './ErrorExceptionFilter';
 
-export const filters = [...exceptionFilters];
+export const globalFilters = [
+  new HttpExceptionFilter(),
+  // new ErrorExceptionFilter(),
+];

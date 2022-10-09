@@ -16,7 +16,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { constants } from '../constants';
+import { appConstants } from '../appConstants';
 
 const schemas = [
   { name: 'RefreshTokens', schema: jwtSchema },
@@ -35,10 +35,10 @@ const schemas = [
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => {
         return {
-          secret: config.get<string>(constants.JWT_SECRET),
+          secret: config.get<string>(appConstants.JWT_SECRET),
           signOptions: {
             expiresIn: config.get<string | number>(
-              constants.ACCESS_TOKEN_EXPIRES_IN,
+              appConstants.ACCESS_TOKEN_EXPIRES_IN,
             ),
           },
         };
